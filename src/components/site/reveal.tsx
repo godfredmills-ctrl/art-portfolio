@@ -66,7 +66,8 @@ export function RevealText({
         {words.map((word, i) => (
           <span
             key={`${word}-${i}`}
-            className="inline-block overflow-hidden pb-[0.08em] align-bottom leading-[inherit]"
+            // Extra bottom padding keeps descenders (g, y, p) inside the mask.
+            className="-mb-[0.14em] inline-block overflow-hidden pb-[0.22em] align-bottom leading-[inherit]"
           >
             <motion.span
               className={cn("inline-block will-change-transform", wordClassName)}

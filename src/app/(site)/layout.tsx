@@ -12,7 +12,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
 
   return (
     <SmoothScroll>
-      <div className="grain">
+      <div>
         <a
           href="#main"
           className="label bg-ink text-paper sr-only fixed top-4 left-4 z-[100] px-4 py-3 focus:not-sr-only"

@@ -64,8 +64,9 @@ No local Postgres? `npx prisma dev` starts a local Prisma Postgres server and pr
 
 ## Deploying to Railway
 
-`railway.json` already configures the build, a pre-deploy migration step, the start
-command (which runs the idempotent seed) and a health check on `/api/health`.
+`railway.json` already configures the build, the start command and a health check on
+`/api/health`. On every start the app applies any pending migrations, runs the idempotent
+seed, then starts Next.js (`npm run start:prod`).
 
 1. **Create a project** in Railway and add a **PostgreSQL** database.
 2. **Add a service from this GitHub repo.**

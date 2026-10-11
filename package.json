@@ -20,7 +20,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
-    "start:prod": "prisma db seed && next start",
+    "start:prod": "prisma migrate deploy && prisma db seed && next start",
     "db:setup": "prisma migrate deploy && prisma db seed"
   },
   "dependencies": {

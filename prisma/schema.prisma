@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum DimensionUnit {
+  CM
+  IN
+  MM
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  passwordHash String
+  /// Incremented on password change to invalidate existing sessions.
+  tokenVersion Int       @default(0)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  sortOrder   Int       @default(0)
+  artworks    Artwork[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([sortOrder])
+}
+
+model Medium {
+  id       String          @id @default(cuid())
+  name     String          @unique
+  artworks ArtworkMedium[]
+}
+
+/// Join table so each artwork keeps its mediums in the order the artist entered them.
+model ArtworkMedium {
+  artworkId String
+  mediumId  String
+  position  Int
+  artwork   Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade)
+  medium    Medium  @relation(fields: [mediumId], references: [id], onDelete: Cascade)
+
+  @@id([artworkId, mediumId])
+  @@index([mediumId])
+}
+
+model Artwork {
+  id             String          @id @default(cuid())
+  title          String
+  slug           String          @unique
+  year           Int
+  height         Decimal?        @db.Decimal(8, 2)
+  width          Decimal?        @db.Decimal(8, 2)
+  depth          Decimal?        @db.Decimal(8, 2)
+  unit           DimensionUnit   @default(CM)
+  /// Free-text override, e.g. "Dimensions variable".
+  dimensionsNote String?
+  description    String?
+  published      Boolean         @default(true)
+  featured       Boolean         @default(false)
+  sortOrder      Int             @default(0)
+  categoryId     String?
+  category       Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  mediums        ArtworkMedium[]
+  images         ArtworkImage[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([published, year])
+  @@index([categoryId])
+  @@index([featured])
+}
+
+model ArtworkImage {
+  id          String  @id @default(cuid())
+  artworkId   String
+  artwork     Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade)
+  /// Storage key, served through /media/<key>.
+  key         String  @unique
+  width       Int
+  height      Int
+  blurDataUrl String?
+  alt         String?
+  sortOrder   Int     @default(0)
+
+  @@index([artworkId, sortOrder])
+}
+
+/// Singleton row (id = 1) holding editable site content.
+model SiteSettings {
+  id             Int      @id @default(1)
+  artistName     String   @default("Artist Name")
+  tagline        String?
+  heroText       String?
+  statementTitle String?
+  statement      String?
+  bio            String?
+  portraitKey    String?
+  portraitWidth  Int?
+  portraitHeight Int?
+  portraitBlur   String?
+  email          String?
+  location       String?
+  instagram      String?
+  website        String?
+  seoDescription String?
+  updatedAt      DateTime @updatedAt
+}

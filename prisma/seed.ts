@@ -11,6 +11,7 @@ import sharp from "sharp";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, type DimensionUnit } from "../src/generated/prisma/client";
 import { processAndStoreImage } from "../src/lib/images";
+import { storage } from "../src/lib/storage";
 
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {
@@ -433,9 +434,49 @@ async function seedAdmin() {
   console.log(`✓ Created admin user ${email}`);
 }
 
+function demoSlug(title: string) {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function demoSeed(index: number) {
+  return 1000 + index * 97;
+}
+
+async function imageExists(key: string): Promise<boolean> {
+  const object = await storage().get(key);
+  if (!object) return false;
+  await object.body.cancel();
+  return true;
+}
+
+/**
+ * Regenerates demo images whose files are missing, e.g. when the demo was seeded
+ * before persistent storage (a Railway Volume) was attached.
+ */
+async function repairDemoImages() {
+  let repaired = 0;
+  for (const [i, work] of works.entries()) {
+    const artwork = await prisma.artwork.findUnique({
+      where: { slug: demoSlug(work.title) },
+      include: { images: true },
+    });
+    for (const img of artwork?.images ?? []) {
+      if (await imageExists(img.key)) continue;
+      const image = await generateImage(work, demoSeed(i));
+      await prisma.artworkImage.update({ where: { id: img.id }, data: image });
+      repaired++;
+    }
+  }
+  if (repaired > 0) console.log(`✓ Regenerated ${repaired} missing demo image(s)`);
+}
+
 async function seedDemo() {
   if (!demo) return;
   if ((await prisma.artwork.count()) > 0) {
+    await repairDemoImages();
     console.log("• Artworks already exist — skipping demo content.");
     return;
   }
@@ -451,14 +492,11 @@ async function seedDemo() {
   }
 
   for (const [i, work] of works.entries()) {
-    const image = await generateImage(work, 1000 + i * 97);
+    const image = await generateImage(work, demoSeed(i));
     await prisma.artwork.create({
       data: {
         title: work.title,
-        slug: work.title
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-|-$/g, ""),
+        slug: demoSlug(work.title),
         year: work.year,
         height: work.h,
         width: work.w,

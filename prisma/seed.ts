@@ -12,9 +12,48 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, type DimensionUnit } from "../src/generated/prisma/client";
 import { processAndStoreImage } from "../src/lib/images";
 
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  console.error(
+    "✗ DATABASE_URL is not set. On Railway, add DATABASE_URL=${{Postgres.DATABASE_URL}} to this service's variables.",
+  );
+  process.exit(1);
+}
+
 const prisma = new PrismaClient({
-  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }),
+  adapter: new PrismaPg({ connectionString: databaseUrl }),
 });
+
+/** host:port/db for logs, without credentials. */
+function describeDatabase(url: string): string {
+  try {
+    const u = new URL(url);
+    return `${u.hostname}:${u.port || 5432}${u.pathname}`;
+  } catch {
+    return "(DATABASE_URL is not a valid URL)";
+  }
+}
+
+/** Retries briefly so a database that is still starting up doesn't fail the deploy. */
+async function waitForDatabase(attempts = 10, delayMs = 3000) {
+  const target = describeDatabase(databaseUrl!);
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      return;
+    } catch (err) {
+      const code = (err as { code?: string }).code ?? (err as Error).message;
+      if (i === attempts) {
+        throw new Error(
+          `Could not connect to the database at ${target} (${code}). ` +
+            "Check that DATABASE_URL on this service points at your Postgres service.",
+        );
+      }
+      console.warn(`… waiting for database at ${target} (${code}), attempt ${i}/${attempts}`);
+      await new Promise((r) => setTimeout(r, delayMs));
+    }
+  }
+}
 
 const demo = process.env.SEED_DEMO_CONTENT === "true";
 
@@ -445,6 +484,7 @@ async function seedDemo() {
 }
 
 async function main() {
+  await waitForDatabase();
   await seedSettings();
   await seedAdmin();
   await seedDemo();
@@ -452,7 +492,7 @@ async function main() {
 
 main()
   .catch((err) => {
-    console.error(err);
+    console.error(`✗ Seed failed: ${err instanceof Error ? err.message : err}`);
     process.exitCode = 1;
   })
   .finally(() => prisma.$disconnect());

@@ -75,14 +75,14 @@ seed, then starts Next.js (`npm run start:prod`).
    - **Bucket / S3:** set `STORAGE_DRIVER=s3` plus `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` (and `S3_FORCE_PATH_STYLE=true` if your provider needs it). Works with Railway Buckets, AWS S3, Cloudflare R2 and others. The bucket can stay private, because images are served through the app at `/media/...`.
 4. **Set variables** on the app service:
 
-   | Variable               | Value                                                                                      |
-   | ---------------------- | ------------------------------------------------------------------------------------------ |
-   | `DATABASE_URL`         | `${{Postgres.DATABASE_URL}}`                                                               |
-   | `AUTH_SECRET`          | output of `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"` |
-   | `ADMIN_EMAIL`          | your login email                                                                           |
-   | `ADMIN_PASSWORD`       | at least 10 characters (used only to create the first account)                             |
-   | `NEXT_PUBLIC_SITE_URL` | your public URL, e.g. `https://yourname.art` (optional; defaults to the Railway domain)    |
-   | `SEED_DEMO_CONTENT`    | `true` to start with demo works, otherwise omit                                            |
+   | Variable            | Value                                                                                      |
+   | ------------------- | ------------------------------------------------------------------------------------------ |
+   | `DATABASE_URL`      | `${{Postgres.DATABASE_URL}}`                                                               |
+   | `AUTH_SECRET`       | output of `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"` |
+   | `ADMIN_EMAIL`       | your login email                                                                           |
+   | `ADMIN_PASSWORD`    | at least 10 characters (used only to create the first account)                             |
+   | `SITE_URL`          | your public URL, e.g. `https://yourname.art` (optional; defaults to the Railway domain)    |
+   | `SEED_DEMO_CONTENT` | `true` to start with demo works, otherwise omit                                            |
 
 5. **Generate a domain** under Settings → Networking (or add your custom domain).
 6. Deploy, then sign in at `/admin`. Change the password from **Account**, and remove `ADMIN_PASSWORD` from the variables if you like, since it's only read when no users exist.

@@ -93,6 +93,7 @@ export default async function ArtworkPage({ params }: Props) {
     ? `mailto:${settings.email}?subject=${encodeURIComponent(`Enquiry: ${artwork.title} (${artwork.year})`)}`
     : null;
 
+  const base = await siteUrl();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "VisualArtwork",
@@ -101,8 +102,8 @@ export default async function ArtworkPage({ params }: Props) {
     artMedium: mediums || undefined,
     artform: artwork.category?.name,
     description: artwork.description ?? undefined,
-    image: artwork.images.map((i) => `${siteUrl()}${i.src}`),
-    url: `${siteUrl()}/works/${artwork.slug}`,
+    image: artwork.images.map((i) => `${base}${i.src}`),
+    url: `${base}/works/${artwork.slug}`,
     creator: { "@type": "Person", name: settings.artistName },
   };
 

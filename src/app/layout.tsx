@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
     `Portfolio of ${name}${settings.tagline ? ` — ${settings.tagline}` : ""}.`;
 
   return {
-    metadataBase: new URL(siteUrl()),
+    metadataBase: new URL(await siteUrl()),
     title: {
       default: settings.tagline ? `${name} — ${settings.tagline}` : name,
       template: `%s — ${name}`,

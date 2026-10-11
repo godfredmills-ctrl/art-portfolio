@@ -5,7 +5,7 @@ import { siteUrl } from "@/lib/env";
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = siteUrl();
+  const base = await siteUrl();
   const artworks = await db.artwork.findMany({
     where: { published: true },
     select: { slug: true, updatedAt: true },

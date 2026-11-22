@@ -10,10 +10,9 @@ export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const session = await verifySession(request.cookies.get(SESSION_COOKIE)?.value);
 
-  if (pathname === "/admin/login") {
-    if (session) return NextResponse.redirect(new URL("/admin", request.url));
-    return NextResponse.next();
-  }
+  // The login page itself sends signed-in users onward, after checking the database.
+  // Redirecting here on the cookie alone would loop for a revoked session.
+  if (pathname === "/admin/login") return NextResponse.next();
 
   if (!session) {
     const url = new URL("/admin/login", request.url);

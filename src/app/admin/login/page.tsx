@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth/session";
 import { getSettings } from "@/lib/data";
 import { LoginForm } from "./login-form";
 
@@ -9,7 +11,12 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ next?: string }>;
 }) {
-  const [{ next }, settings] = await Promise.all([searchParams, getSettings()]);
+  const [{ next }, settings, user] = await Promise.all([
+    searchParams,
+    getSettings(),
+    getCurrentUser(),
+  ]);
+  if (user) redirect("/admin");
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">

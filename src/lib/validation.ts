@@ -112,18 +112,32 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password is required").max(200),
 });
 
+const strongPassword = z
+  .string()
+  .min(10, "Use at least 10 characters")
+  .max(200)
+  .regex(/[a-zA-Z]/, "Include at least one letter")
+  .regex(/[0-9]/, "Include at least one number");
+
 export const passwordSchema = z
   .object({
     currentPassword: z.string().min(1, "Current password is required"),
-    newPassword: z
-      .string()
-      .min(10, "Use at least 10 characters")
-      .max(200)
-      .regex(/[a-zA-Z]/, "Include at least one letter")
-      .regex(/[0-9]/, "Include at least one number"),
+    newPassword: strongPassword,
     confirmPassword: z.string(),
   })
   .refine((d) => d.newPassword === d.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords don't match",
+  });
+
+export const newAdminSchema = z
+  .object({
+    name: optionalText(120),
+    email: z.string().trim().toLowerCase().pipe(z.email("Enter a valid email")),
+    password: strongPassword,
+    confirmPassword: z.string(),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
     path: ["confirmPassword"],
     message: "Passwords don't match",
   });

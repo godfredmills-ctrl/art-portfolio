@@ -413,6 +413,39 @@ async function seedSettings() {
   });
 }
 
+/**
+ * Account recovery: with ADMIN_RESET_PASSWORD=true, sets ADMIN_EMAIL's password to
+ * ADMIN_PASSWORD (creating that admin if needed) and signs out its sessions.
+ * Other admins are untouched. Remove the variable once you can sign in again.
+ */
+async function resetAdminPassword() {
+  if (process.env.ADMIN_RESET_PASSWORD !== "true") return;
+  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const password = process.env.ADMIN_PASSWORD;
+  if (!email || !password) {
+    throw new Error("ADMIN_RESET_PASSWORD=true needs ADMIN_EMAIL and ADMIN_PASSWORD to be set.");
+  }
+  if (password.length < 10) {
+    throw new Error("ADMIN_PASSWORD must be at least 10 characters.");
+  }
+
+  const passwordHash = await bcrypt.hash(password, 12);
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    await prisma.user.update({
+      where: { email },
+      data: { passwordHash, tokenVersion: { increment: 1 } },
+    });
+    console.log(`✓ Reset the password for ${email}`);
+  } else {
+    await prisma.user.create({ data: { email, passwordHash } });
+    console.log(`✓ Created admin user ${email}`);
+  }
+  console.warn(
+    "⚠ ADMIN_RESET_PASSWORD is on: the password is reset on every restart. Remove the variable now that you can sign in.",
+  );
+}
+
 async function seedAdmin() {
   if ((await prisma.user.count()) > 0) return;
   const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
@@ -524,6 +557,7 @@ async function seedDemo() {
 async function main() {
   await waitForDatabase();
   await seedSettings();
+  await resetAdminPassword();
   await seedAdmin();
   await seedDemo();
 }

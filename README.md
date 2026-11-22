@@ -91,6 +91,14 @@ seed, then starts Next.js (`npm run start:prod`).
 
 To start fresh after trying the demo content, delete the demo artworks and categories in the admin.
 
+## Forgotten password
+
+Any signed-in admin can add or remove admins under **Account → Admins**. If nobody can sign in:
+
+1. In Railway, set to the account's email, to a new password (10+ characters) and .
+2. Redeploy. On start, that account's password is set (the account is created if it doesn't exist); other admins are untouched.
+3. Sign in, then **delete **. While it's set, the password is reset on every restart.
+
 ## Project structure
 
 ```

@@ -40,6 +40,7 @@ export default async function DashboardPage() {
       href: "/admin/content",
     },
     { done: Boolean(settings?.portraitKey), label: "Add a portrait", href: "/admin/content" },
+    { done: Boolean(settings?.cvKey), label: "Upload your CV", href: "/admin/cv" },
     { done: Boolean(settings?.email), label: "Add a contact email", href: "/admin/content" },
     { done: categories > 0, label: "Create categories", href: "/admin/categories" },
     { done: featured > 0, label: "Feature works on the home page", href: "/admin/artworks" },

@@ -50,6 +50,16 @@ export interface SettingsDTO {
   instagram: string | null;
   website: string | null;
   seoDescription: string | null;
+  cv: CvDTO | null;
+}
+
+export interface CvDTO {
+  /** Inline URL, used to embed the PDF. */
+  src: string;
+  downloadUrl: string;
+  fileName: string;
+  size: number;
+  updatedAt: Date;
 }
 
 const artworkInclude = {
@@ -125,6 +135,17 @@ export const getSettings = cache(async (): Promise<SettingsDTO> => {
     instagram: s?.instagram ?? null,
     website: s?.website ?? null,
     seoDescription: s?.seoDescription ?? null,
+    cv:
+      s?.cvKey && s.cvFileName && s.cvSize != null && s.cvUpdatedAt
+        ? {
+            // Versioned so browsers never show a stale copy after the CV is replaced.
+            src: `/cv/view?v=${s.cvUpdatedAt.getTime()}`,
+            downloadUrl: "/cv/download",
+            fileName: s.cvFileName,
+            size: s.cvSize,
+            updatedAt: s.cvUpdatedAt,
+          }
+        : null,
   };
 });
 

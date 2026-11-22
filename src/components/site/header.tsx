@@ -8,13 +8,17 @@ import { useEffect, useState } from "react";
 import { EASE_IN_OUT, EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-const NAV = [
-  { href: "/works", label: "Works" },
-  { href: "/statement", label: "Statement" },
-  { href: "#contact", label: "Contact" },
-];
+function navItems(hasCv: boolean) {
+  return [
+    { href: "/works", label: "Works" },
+    { href: "/statement", label: "Statement" },
+    ...(hasCv ? [{ href: "/cv", label: "CV" }] : []),
+    { href: "#contact", label: "Contact" },
+  ];
+}
 
-export function Header({ name }: { name: string }) {
+export function Header({ name, hasCv }: { name: string; hasCv: boolean }) {
+  const NAV = navItems(hasCv);
   const pathname = usePathname();
   const lenis = useLenis();
   const { scrollY } = useScroll();

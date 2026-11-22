@@ -100,8 +100,8 @@ model ArtworkImage {
 
 /// Singleton row (id = 1) holding editable site content.
 model SiteSettings {
-  id             Int      @id @default(1)
-  artistName     String   @default("Artist Name")
+  id             Int       @id @default(1)
+  artistName     String    @default("Artist Name")
   tagline        String?
   heroText       String?
   statementTitle String?
@@ -116,5 +116,10 @@ model SiteSettings {
   instagram      String?
   website        String?
   seoDescription String?
-  updatedAt      DateTime @updatedAt
+  /// Uploaded CV (PDF), served through /media/<key>.
+  cvKey          String?
+  cvFileName     String?
+  cvSize         Int?
+  cvUpdatedAt    DateTime?
+  updatedAt      DateTime  @updatedAt
 }

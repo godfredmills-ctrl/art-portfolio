@@ -15,6 +15,7 @@ Tailwind CSS 4 · Motion · Lenis smooth scroll · sharp image processing · dep
 - Works: filterable gallery by category (shareable `?category=` URLs), masonry layout, image reveals
 - Artwork pages: zoomable full-screen viewer, multiple images, catalogue details, enquiry link, previous/next navigation, related works
 - Statement page with portrait, statement and biography
+- CV page with the PDF embedded and a download button (appears once a CV is uploaded)
 - Smooth scrolling, page transitions, custom cursor, `prefers-reduced-motion` support
 - SEO: per-page metadata, Open Graph images, `sitemap.xml`, `robots.txt`, schema.org `VisualArtwork` JSON-LD
 
@@ -26,6 +27,7 @@ Tailwind CSS 4 · Motion · Lenis smooth scroll · sharp image processing · dep
 - Mediums as ordered tags with suggestions; dimensions as H × W × D in cm, in or mm, or a free-text override
 - Categories: create, edit, delete, reorder
 - Statement & site: statement, bio, portrait, home-page intro, contact links, SEO description
+- CV: upload a PDF (up to 15 MB); it goes live immediately and can be replaced or removed
 - Account: change email/name and password (signs out other sessions)
 
 **Security & quality**

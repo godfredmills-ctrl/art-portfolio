@@ -1,4 +1,4 @@
-const KEY_PATTERN = /^[a-z0-9][a-z0-9/_-]*\.(webp|jpg|jpeg|png|avif)$/i;
+const KEY_PATTERN = /^[a-z0-9][a-z0-9/_-]*\.(webp|jpg|jpeg|png|avif|pdf)$/i;
 
 /** Rejects path traversal and anything that isn't a key we generated. */
 export function isValidKey(key: string): boolean {
@@ -14,6 +14,8 @@ export function contentTypeFor(key: string): string {
       return "image/png";
     case "avif":
       return "image/avif";
+    case "pdf":
+      return "application/pdf";
     default:
       return "image/jpeg";
   }

@@ -102,6 +102,20 @@ export default async function StatementPage() {
             </section>
           )}
 
+          {settings.cv && (
+            <section className="border-line mt-16 flex flex-wrap items-center justify-between gap-4 border-t pt-8">
+              <h2 className="label text-muted">Curriculum vitae</h2>
+              <div className="flex gap-6 text-sm">
+                <Link href="/cv" className="link-underline">
+                  View CV
+                </Link>
+                <a href={settings.cv.downloadUrl} download className="link-underline">
+                  Download PDF
+                </a>
+              </div>
+            </section>
+          )}
+
           <Reveal className="mt-20">
             <Link
               href="/works"

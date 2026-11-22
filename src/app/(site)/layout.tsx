@@ -19,7 +19,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         >
           Skip to content
         </a>
-        <Header name={settings.artistName} />
+        <Header name={settings.artistName} hasCv={!!settings.cv} />
         <main id="main">{children}</main>
         <Footer settings={settings} />
         <Cursor />

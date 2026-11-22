@@ -50,6 +50,15 @@ const nextConfig: NextConfig = {
         source: "/admin/:path*",
         headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
       },
+      // The CV viewer is embedded on the site's own /cv page (and in the admin), so it
+      // may be framed by this origin. Later rules override the global headers above.
+      {
+        source: "/cv/view",
+        headers: [
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+        ],
+      },
     ];
   },
 };

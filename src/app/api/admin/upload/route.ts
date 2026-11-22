@@ -1,25 +1,15 @@
 import { getCurrentUser } from "@/lib/auth/session";
 import { ImageProcessingError, MAX_UPLOAD_BYTES, processAndStoreImage } from "@/lib/images";
 import { rateLimit } from "@/lib/rate-limit";
+import { isSameOrigin } from "@/lib/request";
 
 export const dynamic = "force-dynamic";
-
-function sameOrigin(request: Request): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return true; // non-browser clients; the session cookie is still required
-  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-  try {
-    return new URL(origin).host === host;
-  } catch {
-    return false;
-  }
-}
 
 /** Accepts a single image (multipart field "file"), optimises it and stores it. */
 export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-  if (!sameOrigin(request)) return Response.json({ error: "Forbidden" }, { status: 403 });
+  if (!isSameOrigin(request)) return Response.json({ error: "Forbidden" }, { status: 403 });
 
   if (!rateLimit(`upload:${user.id}`, 120, 60 * 60 * 1000).ok) {
     return Response.json({ error: "Upload limit reached, try again later" }, { status: 429 });

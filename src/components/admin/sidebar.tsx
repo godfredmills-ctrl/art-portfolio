@@ -3,6 +3,7 @@
 import {
   ExternalLink,
   FileText,
+  FileUser,
   Folders,
   Images,
   LayoutDashboard,
@@ -22,6 +23,7 @@ const NAV = [
   { href: "/admin/artworks", label: "Artworks", icon: Images },
   { href: "/admin/categories", label: "Categories", icon: Folders },
   { href: "/admin/content", label: "Statement & site", icon: FileText },
+  { href: "/admin/cv", label: "CV", icon: FileUser },
   { href: "/admin/account", label: "Account", icon: UserRound },
 ];
 

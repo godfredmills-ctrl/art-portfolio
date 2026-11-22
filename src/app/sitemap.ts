@@ -6,6 +6,10 @@ export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = await siteUrl();
+  const settings = await db.siteSettings.findUnique({
+    where: { id: 1 },
+    select: { cvUpdatedAt: true },
+  });
   const artworks = await db.artwork.findMany({
     where: { published: true },
     select: { slug: true, updatedAt: true },
@@ -17,6 +21,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: base, lastModified: latest, changeFrequency: "weekly", priority: 1 },
     { url: `${base}/works`, lastModified: latest, changeFrequency: "weekly", priority: 0.9 },
     { url: `${base}/statement`, changeFrequency: "monthly", priority: 0.7 },
+    ...(settings?.cvUpdatedAt
+      ? [
+          {
+            url: `${base}/cv`,
+            lastModified: settings.cvUpdatedAt,
+            changeFrequency: "monthly" as const,
+            priority: 0.6,
+          },
+        ]
+      : []),
     ...artworks.map((a) => ({
       url: `${base}/works/${a.slug}`,
       lastModified: a.updatedAt,

@@ -86,6 +86,13 @@ export function Footer({ settings }: { settings: SettingsDTO }) {
                   Statement
                 </Link>
               </li>
+              {settings.cv && (
+                <li>
+                  <Link href="/cv" className="link-underline">
+                    CV
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
           <div className="flex items-start lg:justify-end">
